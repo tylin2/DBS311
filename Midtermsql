@@ -1,0 +1,48 @@
+SELECT employee_ID,lower(last_name)||'.'||lpad(lower(first_name),3) AS Username
+FROM employees
+WHERE last_name LIKE '_t%' AND hire_date>TO_DATE('2016/04/22', 'yyyy/mm/dd');
+
+SELECT warehouse_id,MIN(quantity),MAX(quantity),TRUNC(AVG(quantity),2)
+FROM inventories
+GROUP BY warehouse_id
+ORDER BY warehouse_id;
+
+SELECT
+    *
+FROM orders
+WHERE order_date>(SELECT
+                        order_date
+                    FROM orders
+                    WHERE order_id=57
+)
+ORDER BY order_date;
+
+SELECT
+    employee_id,
+    last_name,
+    hire_date
+FROM employees
+WHERE hire_date=(SELECT
+                        min(hire_date)
+                  FROM employees
+                    );
+
+SELECT
+    o.customer_id,
+    c.name,
+    MAX(o.order_date)
+FROM orders o
+JOIN customers c ON o.customer_id=c.customer_id
+GROUP BY o.customer_id,c.name
+HAVING MAX(o.order_date)<TO_DATE('2015/06/21', 'yyyy/mm/dd')
+ORDER BY MAX(o.order_date);
+
+SELECT
+    COUNT(*)
+FROM (SELECT
+            l.location_id,
+            l.city,
+            w.warehouse_id
+        FROM locations l
+        LEFT JOIN warehouses w ON w.location_id=l.location_id
+        WHERE w.location_id is null);
